@@ -1,3 +1,5 @@
+// Disjoint Set class implementation including path compression and union by size
+// By Nick Kolesar
 
 #[derive(Debug)]
 pub struct DisjointSet
