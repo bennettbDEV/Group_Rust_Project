@@ -1,3 +1,6 @@
+// Maze class implementation and Direction enum implementation
+// By Nick Kolesar
+
 use std::fs::File;
 use std::io::prelude::*;
 use rand::{rngs::StdRng, RngCore, SeedableRng};
@@ -6,10 +9,10 @@ use crate::disjointset;
 #[derive(Debug)]
 pub enum Direction
 {
-    North = 3,
-    East = 0,
-    South = 1,
-    West = 2
+    North,
+    East,
+    South,
+    West
 }
 
 
@@ -71,7 +74,7 @@ fn filewrite(buf: &[u8], file: &mut File)
 }
 
 
-#[allow(dead_code)]
+//#[allow(dead_code)]
 impl Maze
 {
     /// This function takes in a cell from the maze as well as a direction.
