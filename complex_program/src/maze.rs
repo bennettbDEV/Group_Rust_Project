@@ -1,11 +1,9 @@
-// Maze class implementation and Direction enum implementation
-// By Nick Kolesar
-
 use std::fs::File;
 use std::io::prelude::*;
 use rand::{rngs::StdRng, RngCore, SeedableRng};
 use crate::disjointset;
 
+/// Enumeration of the four Cardinal directions
 #[derive(Debug)]
 pub enum Direction
 {
@@ -16,9 +14,10 @@ pub enum Direction
 }
 
 
-// used for determining the opposite direction
+/// implementation used for determining the opposite direction of the current Direction
 impl Direction
 {
+    /// value is used to allow an enum to be substituted for an i32
     fn value (&self) -> i32
     {
         match *self
@@ -33,50 +32,48 @@ impl Direction
 
 // clone attribute used to allow for copies to be made in maze_walls vector
 #[derive(Clone, Debug)]
+/// Custom type for keeping track of south and east walls of a cell
 struct CellWalls
 {
     east: bool,
     south: bool
 }
 
-
-pub struct Maze 
+/// struct holding infomration pertaining to the Maze Object
+pub struct Maze
 {
     maze_walls: Vec<CellWalls>,
     num_rows: u32,
     num_columns: u32,
     random_seed: u64,
-    stop_early: bool
-}
-
-
-// "Constructor" for Maze class
-#[allow(non_snake_case)]
-pub fn Maze(rows: u32, columns: u32, seed: u64, stop_early: bool) -> Maze
-{
-    let num_cells = rows * columns;
-    let mut the_maze = Maze{ num_rows: rows, 
-                                   num_columns: columns, 
-                                   maze_walls: vec![CellWalls{east: true, south: true}; num_cells as usize], 
-                                   random_seed: seed, 
-                                   stop_early: stop_early};
-
-    the_maze.maze_walls[(num_cells-1) as usize].east = false;
-    
-    // return the constructed Maze object
-    the_maze
-}
-
-
-fn filewrite(buf: &[u8], file: &mut File) 
-{ 
-    file.write(buf).expect("Write issue detected."); 
+    stop_early: bool,
+    file: File
 }
 
 
 //#[allow(dead_code)]
 impl Maze
 {
+
+    /// "Constructor" for Maze class
+    /// This function builds a Maze instance with the values aquired through the command line
+    #[allow(non_snake_case)]
+    pub fn Maze(rows: u32, columns: u32, outfile: &str, seed: u64, stop_early: bool) -> Self
+    {
+        let num_cells = rows as usize * columns as usize;
+        let mut the_maze = Maze{ num_rows: rows, 
+                                       num_columns: columns, 
+                                       maze_walls: vec![CellWalls{east: true, south: true}; num_cells], 
+                                       random_seed: seed, 
+                                       stop_early: stop_early,
+                                       file: File::create(outfile).expect("Could not open file.")};
+
+        the_maze.maze_walls[num_cells - 1].east = false;
+
+        // return the constructed Maze object
+        the_maze
+    }
+
     /// This function takes in a cell from the maze as well as a direction.
     /// The return value is the adjacent cell in the direction that has been designated.
     pub fn get_adjacent_index(&self, current_cell: u32, direction: &Direction) -> u32
@@ -97,34 +94,16 @@ impl Maze
     {
         match direction 
         {
-            Direction::North => if current_cell / self.num_columns == 0 
-                                { 
-                                    return false; 
-                                } 
-                                else { return true; },
-
-            Direction::East =>  if current_cell % self.num_columns == self.num_columns - 1 
-                                { 
-                                    return false 
-                                } 
-                                else { return true; },
-            
-            Direction::South => if current_cell / self.num_columns == self.num_rows - 1 
-                                { 
-                                    return false; 
-                                } 
-                                else { return true; },
-            
-            Direction::West =>  if current_cell % self.num_columns == 0 
-                                { 
-                                    return false; 
-                                } 
-                                else { return true; }
+            Direction::North => if current_cell / self.num_columns == 0 { false } else { true },
+            Direction::West =>  if current_cell % self.num_columns == 0 { false } else { true },
+            Direction::East =>  if current_cell % self.num_columns == self.num_columns - 1 { false } else { true },
+            Direction::South => if current_cell / self.num_columns == self.num_rows - 1    { false } else { true }
         }
     }
 
+
     // private helper for getting an enum from an unsigned integer
-    fn get_direction(&self, direction_num: u32) -> Direction
+    fn get_direction(&self, direction_num: u8) -> Direction
     {
         match direction_num
         {
@@ -137,6 +116,9 @@ impl Maze
 
 
     #[allow(non_snake_case)]
+    /// This function creates the maze itself by randomly selecting a location and an adjacent cell
+    /// If the cell and it's neighbor are already in the same set then nothing is done
+    /// If the cells are not in the same set then they are unionized and the maze is checked for completion
     pub fn generate_maze(&mut self)
     {
         // initialize variables
@@ -151,14 +133,14 @@ impl Maze
         {
             let mut current_cell = rng.next_u32() % num_cells as u32;
             let direction_num = rng.next_u32() % NUM_DIRECTIONS;
-            let mut direction = self.get_direction(direction_num);
+            let mut direction = self.get_direction(direction_num as u8);
 
             // check that direction is valid
             if !self.is_valid_direction(current_cell, &direction)
             {
                 let new_direction = (direction.value() + 2) as u32 % NUM_DIRECTIONS;
                 
-                direction = self.get_direction(new_direction);
+                direction = self.get_direction(new_direction as u8);
             }
 
             let mut adjacent_cell = self.get_adjacent_index(current_cell, &direction);
@@ -180,7 +162,8 @@ impl Maze
                 {
                     self.maze_walls[current_cell as usize].south = false;
                 }
-                else {
+                else 
+                {
                     self.maze_walls[current_cell as usize].east = false;
                 }
 
@@ -189,52 +172,66 @@ impl Maze
                     maze_complete = true;
                 }
             }
-
         }
+    }
+
+    
+    /// This is a private helper function used to make writing to file cleaner
+    fn filewrite(&mut self,buf: &[u8]) 
+    { 
+        self.file.write(buf).expect("Write issue detected."); 
     }
 
 
     /// This function generates the output of the maze and writes it to the user defined file
-    pub fn print(&self, filename: &str)
-    {        
-        // variable to perform file io
-        let mut file = File::create(filename).expect("Could not open file.");
-        
+    pub fn print(&mut self)
+    {       
         // top border of maze
         for _ in 0..self.num_columns
         {
-            filewrite(b" _", &mut file);
+            self.filewrite(b" _");
         }
+        
+        // start writing maze on next line
+        self.filewrite(b"\n");
 
-        filewrite(b"\n", &mut file);
-
+        // draw maze
         for i in 0..self.num_rows
         {
             let cellbase = i * self.num_columns;
 
-            if i == 0 { 
-                filewrite(b" ", &mut file); 
+            // leftmost wall
+            if i == 0 
+            { 
+                self.filewrite(b" "); 
             }
-            else {
-                filewrite(b"|", &mut file);
+            else 
+            {
+                self.filewrite(b"|");
             }
-            // fill in maze row by row
+
+            // fill in rest of maze row
             for j in 0..self.num_columns
             {
-                if self.maze_walls[(cellbase + j) as usize].south {
-                    filewrite(b"_", &mut file);
+                if self.maze_walls[(cellbase + j) as usize].south 
+                {
+                    self.filewrite(b"_");
                 }
-                else {
-                    filewrite(b" ", &mut file);
+                else 
+                {
+                    self.filewrite(b" ");
                 }
-                if self.maze_walls[(cellbase + j) as usize].east {
-                    filewrite(b"|", &mut file);
+                if self.maze_walls[(cellbase + j) as usize].east 
+                {
+                    self.filewrite(b"|");
                 }
-                else {
-                    filewrite(b" ", &mut file);
+                else 
+                {
+                    self.filewrite(b" ");
                 }
             }
-            filewrite(b"\n", &mut file);
+            // set write pointer to next line
+            self.filewrite(b"\n");
         }
     }
 }
