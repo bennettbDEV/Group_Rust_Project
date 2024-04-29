@@ -5,6 +5,22 @@ pub mod disjointset;
 pub mod maze;
 use std::env;
 
+/// Main Function:
+/// Creates Maze from command line arguments and prints to file.
+/// # Command line example 
+/// 
+/// ```
+/// cargo run 5 5 output.txt 101
+/// ```
+/// 
+/// Example above creates the maze:
+///   _ _ _ _ _
+///    |  _  | |
+///  |_    |_| |
+///  | |_|  _  |
+///  |_    |_  |
+///  |_ _|_|_ _
+/// 
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -31,10 +47,15 @@ fn main() {
 
     let seed: u64 = args[4].parse().unwrap();
 
-    let mut my_maze = maze::Maze(num_rows, num_cols, seed, stop_early);
+    // small warning to the user about the displaying of the maze after column num 511
+    if num_cols > 511
+    {
+        println!("WARNING: Displaying of a maze this size may appear broken if opened in notepad!");
+    }
+
+    let mut my_maze = maze::Maze::Maze(num_rows, num_cols, outfile, seed, stop_early);
 
     my_maze.generate_maze();
     
-    my_maze.print(outfile);
-    
+    my_maze.print();
 }
