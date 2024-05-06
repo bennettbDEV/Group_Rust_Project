@@ -53,7 +53,7 @@ fn main() {
         println!("WARNING: Displaying of a maze this size may appear broken if opened in notepad!");
     }
 
-    let mut my_maze = maze::Maze::Maze(num_rows, num_cols, outfile, seed, stop_early);
+    let mut my_maze = maze::Maze::new(num_rows, num_cols, outfile, seed, stop_early);
 
     my_maze.generate_maze();
     
