@@ -1,6 +1,6 @@
 // struct and implementation of a Disjoint Set
 // By: Nick Kolesar
-
+// Original C++ version written by Mary Elaine Califf and Nick Kolesar 
 #[derive(Debug)]
 /// struct holding DisjointSet's fields
 pub struct DisjointSet
