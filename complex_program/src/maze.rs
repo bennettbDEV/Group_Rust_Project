@@ -58,7 +58,7 @@ impl Maze
     /// "Constructor" for Maze class
     /// This function builds a Maze instance with the values aquired through the command line
     #[allow(non_snake_case)]
-    pub fn Maze(rows: u32, columns: u32, outfile: &str, seed: u64, stop_early: bool) -> Self
+    pub fn new(rows: u32, columns: u32, outfile: &str, seed: u64, stop_early: bool) -> Self
     {
         let num_cells = rows as usize * columns as usize;
         let mut the_maze = Maze{ num_rows: rows, 
@@ -124,7 +124,7 @@ impl Maze
         // initialize variables
         let NUM_DIRECTIONS = 4;
         let num_cells = self.num_rows * self.num_columns;
-        let mut my_set = disjointset::DisjointSet(num_cells);
+        let mut my_set = disjointset::new(num_cells);
         let mut maze_complete = false;
 
         let mut rng = StdRng::seed_from_u64(self.random_seed);
