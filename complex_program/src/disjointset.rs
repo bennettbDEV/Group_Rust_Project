@@ -14,13 +14,12 @@ impl DisjointSet
 {
     /// "Constructor" of DisjointSet
     #[allow(non_snake_case)]
-    pub fn DisjointSet(size: u32) -> Self
+    pub fn new(size: u32) -> Self
     {
         let set = DisjointSet{the_array: vec![-1; size as usize], num_values: size};
         
         set
     }
-
 
     /// Path Compressing Recursive Find Function
     pub fn find(&mut self, object_index: i32) -> i32 
