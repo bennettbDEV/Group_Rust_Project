@@ -1,3 +1,6 @@
+// struct and implementation of the Maze Object
+// By Nick Kolesar
+// Original C++ version written by Mary Elaine Califf and Nick Kolesar
 use std::fs::File;
 use std::io::prelude::*;
 use rand::{rngs::StdRng, RngCore, SeedableRng};
