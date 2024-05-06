@@ -1,6 +1,6 @@
 // Rust program that takes in command line arguments and creates a reproducible random maze
 // By Nick Kolesar 
-
+// Original C++ version written by Mary Elaine Califf and Nick Kolesar 
 pub mod disjointset;
 pub mod maze;
 use std::env;
