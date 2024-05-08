@@ -2,8 +2,7 @@
 
 use std::env;
 
-fn main()
-{
+fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
@@ -26,7 +25,7 @@ fn find_binary(val_to_convert: &str) -> i32 {
 
     for num in binary_vector.iter().rev() {
         match num {
-            '0' => {},
+            '0' => {}
             _ => current_val = current_val + 2_i32.pow(current_index),
         }
         current_index += 1;
@@ -34,4 +33,3 @@ fn find_binary(val_to_convert: &str) -> i32 {
 
     return current_val;
 }
-
