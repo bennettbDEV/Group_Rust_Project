@@ -13,6 +13,7 @@ fn main() {
 
     //Instantiates vector with _ for each char in word
     let mut word_progress = vec!['_'; word.len()];
+    let mut guessed_letters = String::new();
     let mut num_guesses = 6;
 
     println!("Welcome to Hangman!");
@@ -35,9 +36,13 @@ fn main() {
             .read_line(&mut guess)
             .expect("Failed to read line");
 
-        //Use Pattern matching to return the char if there is one
+        //Use Pattern matching to return the char if there is one (and hasn't been guessed before)
         //If there is no input 'None' or invalid input then loop restarted
         let guess: char = match guess.trim().chars().next() {
+            Some(cur_guess) if guessed_letters.contains(cur_guess) => {
+                println!("You've already guessed that letter. Enter a different letter");
+                continue;
+            }
             Some(cur_guess) if cur_guess.is_ascii_alphabetic() => cur_guess,
             Some(_) => {
                 println!("Invalid entry. Enter a letter.");
@@ -48,6 +53,7 @@ fn main() {
                 continue;
             }
         };
+        guessed_letters.push(guess);
 
         let mut letter_found = false;
         //If a letter is in word, add to word_progress
@@ -66,5 +72,6 @@ fn main() {
             println!("Game over. You ran out of guesses. The word was: {}", word);
             break;
         }
+        println!("Letters you've guessed so far: {}", guessed_letters);
     }
 }
