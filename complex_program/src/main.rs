@@ -1,27 +1,28 @@
 // Rust program that takes in command line arguments and creates a reproducible random maze
-// By Nick Kolesar 
+// By Nick Kolesar
 // Original C++ version written by Mary Elaine Califf and Nick Kolesar 
-pub mod disjointset;
-pub mod maze;
+mod disjointset;
+mod maze;
 use std::env;
 
 /// Main Function:
 /// Creates Maze from command line arguments and prints to file.
-/// # Command line example 
+/// # Command line examples
 /// 
 /// ```
 /// cargo run 5 5 output.txt 101
+/// cargo run 5 5 output.txt 101 1
 /// ```
-/// 
-/// Example above creates the maze:
-///   _ _ _ _ _
-///    |  _  | |
-///  |_    |_| |
-///  | |_|  _  |
-///  |_    |_  |
-///  |_ _|_|_ _
-/// 
-fn main() {
+// 
+// Example above creates the maze:
+//   _ _ _ _ _
+//    |  _  | |
+//  |_    |_| |
+//  | |_|  _  |
+//  |_    |_  |
+//  |_ _|_|_ _
+//
+pub fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 5
