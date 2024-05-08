@@ -4,7 +4,7 @@
 use std::fs::File;
 use std::io::prelude::*;
 use rand::{rngs::StdRng, RngCore, SeedableRng};
-use crate::disjointset;
+use crate::disjointset::DisjointSet;
 
 /// Enumeration of the four Cardinal directions
 #[derive(Debug)]
@@ -128,7 +128,7 @@ impl Maze
         // initialize variables
         let NUM_DIRECTIONS = 4;
         let num_cells = self.num_rows * self.num_columns;
-        let mut my_set = disjointset::DisjointSet::new(num_cells);
+        let mut my_set = DisjointSet::new(num_cells);
         let mut maze_complete = false;
         let mut rng = StdRng::seed_from_u64(self.random_seed);
 
