@@ -42,7 +42,7 @@ struct CellWalls
     south: bool
 }
 
-/// struct holding infomration pertaining to the Maze Object
+/// struct holding information pertaining to the Maze Object
 pub struct Maze
 {
     maze_walls: Vec<CellWalls>,
@@ -64,6 +64,7 @@ impl Maze
     pub fn new(rows: u32, columns: u32, outfile: &str, seed: u64, stop_early: bool) -> Self
     {
         let num_cells = rows as usize * columns as usize;
+        // mut here makes all fields mutable
         let mut the_maze = Maze{ num_rows: rows, 
                                        num_columns: columns, 
                                        maze_walls: vec![CellWalls{east: true, south: true}; num_cells], 
@@ -72,7 +73,7 @@ impl Maze
                                        file: File::create(outfile).expect("Could not open file.")};
 
         the_maze.maze_walls[num_cells - 1].east = false;
-
+    
         // return the constructed Maze object
         the_maze
     }
@@ -127,9 +128,8 @@ impl Maze
         // initialize variables
         let NUM_DIRECTIONS = 4;
         let num_cells = self.num_rows * self.num_columns;
-        let mut my_set = disjointset::new(num_cells);
+        let mut my_set = disjointset::DisjointSet::new(num_cells);
         let mut maze_complete = false;
-
         let mut rng = StdRng::seed_from_u64(self.random_seed);
 
         while !maze_complete
@@ -178,7 +178,6 @@ impl Maze
         }
     }
 
-    
     /// This is a private helper function used to make writing to file cleaner
     fn filewrite(&mut self,buf: &[u8]) 
     { 
@@ -195,7 +194,7 @@ impl Maze
             self.filewrite(b" _");
         }
         
-        // start writing maze on next line
+        // start writing maze on new line
         self.filewrite(b"\n");
 
         // draw maze
