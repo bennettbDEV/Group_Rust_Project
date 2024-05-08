@@ -3,6 +3,7 @@
 // Original C++ version written by Mary Elaine Califf and Nick Kolesar 
 mod disjointset;
 mod maze;
+use crate::maze::Maze;
 use std::env;
 
 /// Main Function:
@@ -54,7 +55,7 @@ pub fn main() {
         println!("WARNING: Displaying of a maze this size may appear broken if opened in notepad!");
     }
 
-    let mut my_maze = maze::Maze::new(num_rows, num_cols, outfile, seed, stop_early);
+    let mut my_maze = Maze::new(num_rows, num_cols, outfile, seed, stop_early);
 
     my_maze.generate_maze();
     
