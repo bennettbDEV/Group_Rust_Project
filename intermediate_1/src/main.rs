@@ -1,22 +1,26 @@
-// This program will let the user play hangman through the command line. This will show the usage
-// of arrays in Rust.
+//This program will let the user play hangman through the command line. This will show the usage
+//of vectors, itorators, and pattern matching in Rust.
+//Bennett Beltran
 
+//Rand, random_word and standard io crates are used
 use rand::Rng;
 use random_word::Lang;
 use std::io;
+
 fn main() {
     //Note that the rust compiler infers the type of "word_length"
     let word_length = rand::thread_rng().gen_range(4..=7);
     //Generate random word with length 4..=7
     let word = random_word::gen_len(word_length, Lang::En);
-    let word = word.unwrap();
+    let word: &str = word.unwrap(); //Borrowed variable
 
     //Instantiates vector with _ for each char in word
     let mut word_progress = vec!['_'; word.len()];
+    //Tracks what letters the user has guessed
     let mut guessed_letters = String::new();
-    let mut num_guesses = 6;
+    let mut num_guesses = (word_length as f32 * 1.5).ceil() as usize;
 
-    println!("Welcome to Hangman!");
+    println!("Welcome to Hangman");
 
     loop {
         //current_guesses collects the chars from word_progress
@@ -25,7 +29,7 @@ fn main() {
         println!("You have {} guesses left", num_guesses);
 
         if current_guesses == word {
-            println!("Congrats, you guessed the word");
+            println!("Congrats, you guessed the word!!");
             break;
         }
         println!("Enter a letter to guess:");
@@ -53,6 +57,7 @@ fn main() {
                 continue;
             }
         };
+        //Add the guess to guessed letters String
         guessed_letters.push(guess);
 
         let mut letter_found = false;
@@ -69,7 +74,8 @@ fn main() {
         }
 
         if num_guesses == 0 {
-            println!("Game over. You ran out of guesses. The word was: {}", word);
+            println!(
+                "Game over. \nYou ran out of guesses. The word was: {}", word);
             break;
         }
         println!("Letters you've guessed so far: {}", guessed_letters);
